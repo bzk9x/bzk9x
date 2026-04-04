@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ogundiji Tiwalope — Android Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0906;
+      --bg2:       #111009;
+      --cream:     #e8e0d0;
+      --cream-dim: #9e9080;
+      --gold:      #c8a96e;
+      --gold-dim:  #6e5c3a;
+      --line:      rgba(200,169,110,0.15);
+      --serif:     'Cormorant Garamond', Georgia, serif;
+      --mono:      'DM Mono', 'Courier New', monospace;
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--serif);
+      font-weight: 300;
+      line-height: 1.6;
+      cursor: none;
+      overflow-x: hidden;
+    }
+    body.modal-open { overflow: hidden; }
+
+    /* ── CURSOR ── */
+    #cursor-dot {
+      position: fixed; width: 6px; height: 6px;
+      background: var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: opacity 0.3s, width 0.2s var(--ease-back), height 0.2s var(--ease-back);
+    }
+    #cursor-ring {
+      position: fixed; width: 28px; height: 28px;
+      border: 1px solid var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width 0.25s var(--ease), height 0.25s var(--ease),
+                  background 0.3s, opacity 0.3s;
+      opacity: 0.45;
+    }
+    body.cursor-hover #cursor-ring { width: 52px; height: 52px; opacity: 1; background: rgba(200,169,110,0.06); }
+    body.cursor-click #cursor-dot  { width: 14px; height: 14px; }
+
+    /* ── NOISE ── */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025; pointer-events: none; z-index: 1000;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1.5rem,5vw,4rem); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: clamp(1.2rem,3vw,2rem) clamp(1.5rem,5vw,4rem);
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    nav::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, var(--bg) 30%, transparent);
+      z-index: -1; pointer-events: none;
+    }
+    .nav-name {
+      font-family: var(--mono); font-size: clamp(0.6rem,1.2vw,0.72rem);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--cream-dim); text-decoration: none; transition: color 0.3s;
+    }
+    .nav-name:hover { color: var(--cream); }
+    .nav-links { display: flex; gap: clamp(1.2rem,3vw,2.5rem); list-style: none; }
+    .nav-links a {
+      font-family: var(--mono); font-size: clamp(0.58rem,1.1vw,0.68rem);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--cream-dim); text-decoration: none;
+      position: relative; transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -2px;
+      width: 0; height: 1px; background: var(--gold); transition: width 0.4s var(--ease);
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh; display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: clamp(3rem,8vw,6rem); padding-top: 8rem;
+      position: relative; border-bottom: 1px solid var(--line); overflow: hidden;
+    }
+
+    /* Sweeping gold line across top */
+    .hero-line { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--line); overflow: hidden; }
+    .hero-line::after {
+      content: ''; position: absolute; top: 0; left: -60%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      animation: line-sweep 2.8s var(--ease) 0.6s forwards;
+    }
+    @keyframes line-sweep { 0% { left: -60%; opacity: 0; } 15% { opacity: 1; } 100% { left: 110%; opacity: 0; } }
+
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: clamp(0.6rem,1.1vw,0.7rem);
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 2rem;
+      opacity: 0; animation: fade-up 1s var(--ease) 0.4s forwards;
+    }
+
+    /* Split-text hero */
+    .hero-name {
+      font-size: clamp(3.5rem,10vw,9.5rem);
+      font-weight: 300; line-height: 0.95; letter-spacing: -0.02em; color: var(--cream);
+    }
+    .hero-name .char {
+      display: inline-block;
+      opacity: 0; transform: translateY(40px) rotate(4deg);
+      animation: char-in 0.65s var(--ease-back) forwards;
+    }
+    .hero-name em { font-style: italic; color: var(--gold); }
+    @keyframes char-in { to { opacity: 1; transform: translateY(0) rotate(0deg); } }
+
+    .hero-tagline {
+      margin-top: clamp(1.5rem,4vw,3rem); max-width: 38ch;
+      font-size: clamp(0.9rem,1.5vw,1.1rem); line-height: 1.7; color: var(--cream-dim);
+      opacity: 0; animation: fade-up 1.1s var(--ease) 1.5s forwards;
+    }
+
+    /* Vertical gold line — draws itself */
+    .hero-side-line {
+      position: absolute; right: clamp(1.5rem,5vw,4rem); top: 22%;
+      width: 1px; height: 0;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: grow-line 1.2s var(--ease) 1.8s forwards;
+    }
+    @keyframes grow-line { to { height: clamp(80px,18vw,160px); } }
+
+    .hero-scroll-hint {
+      position: absolute; bottom: clamp(1.5rem,4vw,3rem); right: 0;
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold-dim); writing-mode: vertical-rl;
+      opacity: 0; animation: fade-in 1s var(--ease) 2.2s forwards;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .hero-scroll-hint::before { content: ''; width: 1px; height: 40px; background: var(--gold-dim); display: block; }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: var(--mono); font-size: clamp(0.58rem,1vw,0.66rem);
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 3rem; display: flex; align-items: center; gap: 1.2rem; overflow: hidden;
+    }
+    .section-label .label-text {
+      opacity: 0; transform: translateX(-10px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    .section-label.visible .label-text { opacity: 1; transform: translateX(0); }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--gold-dim), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.9s var(--ease) 0.3s;
+    }
+    .section-label.visible::after { transform: scaleX(1); }
+
+    /* ── WORK ── */
+    #work { padding: clamp(5rem,12vw,10rem) 0; }
+    .project-list { list-style: none; }
+
+    .project-item {
+      border-top: 1px solid var(--line);
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+    .project-item:last-child { border-bottom: 1px solid var(--line); }
+    .project-item.visible { opacity: 1; transform: translateY(0); }
+
+    .project-row {
+      display: grid; grid-template-columns: 3.5rem 1fr auto;
+      align-items: start; gap: 0 2rem;
+      padding: clamp(1.4rem,3vw,2rem) 0;
+      cursor: none; position: relative; overflow: hidden;
+    }
+    /* Sweep fill on hover */
+    .project-row::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(200,169,110,0.04);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.5s var(--ease); pointer-events: none;
+    }
+    .project-item:hover .project-row::before { transform: scaleX(1); }
+
+    .project-index {
+      font-family: var(--mono); font-size: clamp(0.6rem,1vw,0.68rem);
+      color: var(--gold-dim); padding-top: 0.3rem; letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .project-item:hover .project-index { color: var(--gold); }
+
+    .project-name {
+      font-size: clamp(1.4rem,3.5vw,2.4rem); font-weight: 400; line-height: 1.15;
+      color: var(--cream); letter-spacing: -0.01em;
+      transition: color 0.3s, letter-spacing 0.4s var(--ease);
+    }
+    .project-item:hover .project-name { color: var(--gold); letter-spacing: 0.01em; }
+
+    .project-meta {
+      font-family: var(--mono); font-size: clamp(0.58rem,0.95vw,0.66rem);
+      color: var(--cream-dim); letter-spacing: 0.12em;
+      margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
+    }
+    .project-tag { color: var(--gold-dim); text-transform: uppercase; }
+
+    .project-desc {
+      font-size: clamp(0.82rem,1.3vw,0.95rem); color: var(--cream-dim);
+      line-height: 1.65; margin-top: 0.8rem; max-width: 55ch;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.5s var(--ease), opacity 0.4s; opacity: 0;
+    }
+    .project-item.open .project-desc { max-height: 12rem; opacity: 1; }
+
+    /* Case study CTA */
+    .project-cta {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold); margin-top: 1rem;
+      opacity: 0; transform: translateX(-6px);
+      transition: opacity 0.3s 0.1s, transform 0.3s 0.1s var(--ease);
+      cursor: none; user-select: none;
+    }
+    .project-cta .arrow { display: inline-block; transition: transform 0.3s var(--ease); }
+    .project-cta:hover .arrow { transform: translateX(4px); }
+    .project-item.open .project-cta { opacity: 1; transform: translateX(0); }
+
+    .project-status {
+      font-family: var(--mono); font-size: clamp(0.55rem,0.9vw,0.62rem);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding-top: 0.45rem; color: var(--cream-dim); white-space: nowrap;
+    }
+    .project-status.live { color: var(--gold); }
+    .project-status.wip  { color: #a08060; }
+    .project-status::before { content: '·'; margin-right: 0.4em; font-size: 1.2em; vertical-align: middle; }
+
+    .project-toggle {
+      display: none; font-family: var(--mono); font-size: 0.7rem;
+      color: var(--gold-dim); margin-top: 0.5rem; cursor: pointer; user-select: none;
+    }
+    @media (max-width: 600px) { .project-toggle { display: block; } }
+
+    /* ── STACK ── */
+    #stack { padding: clamp(4rem,10vw,8rem) 0; border-top: 1px solid var(--line); }
+    .stack-grid {
+      display: grid; grid-template-columns: repeat(auto-fill,minmax(155px,1fr));
+      gap: 1px; border: 1px solid var(--line);
+    }
+    .stack-cell {
+      padding: clamp(1rem,2.5vw,1.6rem);
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease), background 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .stack-cell::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 1px; background: var(--gold);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s var(--ease);
+    }
+    .stack-cell:hover { background: rgba(200,169,110,0.04); }
+    .stack-cell:hover::after { transform: scaleX(1); }
+    .stack-cell.visible { opacity: 1; transform: translateY(0); }
+    .stack-cell-name { font-size: clamp(0.85rem,1.4vw,1rem); font-weight: 400; color: var(--cream); }
+    .stack-cell-type { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dim); margin-top: 0.3rem; }
+
+    /* ── CONTACT ── */
+    #contact { padding: clamp(4rem,10vw,8rem) 0 clamp(3rem,8vw,6rem); border-top: 1px solid var(--line); }
+    .contact-cta {
+      font-size: clamp(2.5rem,7vw,6.5rem); font-weight: 300; line-height: 1.05;
+      letter-spacing: -0.02em; color: var(--cream);
+      margin-bottom: clamp(2rem,5vw,4rem);
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    }
+    .contact-cta.visible { opacity: 1; transform: translateY(0); }
+    .contact-cta em { font-style: italic; color: var(--gold); }
+    .contact-links { display: flex; flex-wrap: wrap; gap: 0.8rem 2rem; list-style: none; }
+    .contact-links a {
+      font-family: var(--mono); font-size: clamp(0.62rem,1.1vw,0.72rem);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--cream-dim); text-decoration: none; position: relative; transition: color 0.3s;
+    }
+    .contact-links a::after {
+      content: ''; position: absolute; left: 0; bottom: -2px;
+      width: 100%; height: 1px; background: var(--gold);
+      transform: scaleX(0); transform-origin: right; transition: transform 0.4s var(--ease);
+    }
+    .contact-links a:hover { color: var(--cream); }
+    .contact-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    footer {
+      border-top: 1px solid var(--line); padding: clamp(1.5rem,4vw,2.5rem) 0;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-copy, .footer-loc {
+      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dim);
+    }
+
+    /* ── MODAL ── */
+    #modal-overlay {
+      position: fixed; inset: 0; z-index: 800;
+      background: rgba(10,9,6,0.82);
+      backdrop-filter: blur(14px) saturate(0.8);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s var(--ease);
+      display: flex; align-items: flex-end;
+    }
+    #modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    #modal {
+      width: 100%; max-height: 92svh;
+      background: var(--bg2); border-top: 1px solid var(--line);
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.65s var(--ease);
+      position: relative;
+    }
+    #modal-overlay.open #modal { transform: translateY(0); }
+
+    /* Gradient glow at modal top edge */
+    #modal::before {
+      content: ''; position: absolute; top: -1px; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      animation: none;
+    }
+    #modal-overlay.open #modal::before {
+      animation: modal-glow 0.8s var(--ease) 0.5s both;
+    }
+    @keyframes modal-glow { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-handle {
+      width: 36px; height: 3px; background: var(--gold-dim); border-radius: 2px;
+      margin: 1.2rem auto 0; opacity: 0.45;
+    }
+    .modal-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: clamp(2rem,5vw,4rem) clamp(1.5rem,5vw,4rem) clamp(3rem,8vw,6rem);
+    }
+
+    .modal-close {
+      position: absolute; top: 1.2rem; right: clamp(1.5rem,5vw,4rem);
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--cream-dim); background: none; border: none; cursor: none;
+      transition: color 0.3s; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .modal-close:hover { color: var(--gold); }
+    .modal-close .x { display: inline-block; font-size: 1rem; line-height: 1; transition: transform 0.4s var(--ease); }
+    .modal-close:hover .x { transform: rotate(90deg); }
+
+    /* Modal content — staggered reveal */
+    .modal-eyebrow {
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem;
+      opacity: 0; transform: translateY(10px);
+      transition: opacity 0.5s var(--ease) 0.25s, transform 0.5s var(--ease) 0.25s;
+    }
+    #modal-overlay.open .modal-eyebrow { opacity: 1; transform: translateY(0); }
+
+    .modal-title {
+      font-size: clamp(2.2rem,5vw,4.5rem); font-weight: 300; line-height: 1.05;
+      letter-spacing: -0.02em; color: var(--cream);
+      margin-bottom: clamp(2rem,5vw,3.5rem);
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.6s var(--ease) 0.35s, transform 0.6s var(--ease) 0.35s;
+    }
+    .modal-title em { font-style: italic; color: var(--gold); }
+    #modal-overlay.open .modal-title { opacity: 1; transform: translateY(0); }
+
+    /* Phone mockup */
+    .modal-mockup {
+      width: 100%; aspect-ratio: 16/7;
+      background: #0d0c0a; border: 1px solid var(--line); border-radius: 12px;
+      margin-bottom: clamp(2rem,5vw,3.5rem); overflow: hidden;
+      position: relative; display: flex; align-items: center; justify-content: center;
+      gap: 1.5rem; padding: clamp(1rem,3vw,2rem);
+      opacity: 0; transform: translateY(20px) scale(0.98);
+      transition: opacity 0.7s var(--ease) 0.45s, transform 0.7s var(--ease) 0.45s;
+    }
+    #modal-overlay.open .modal-mockup { opacity: 1; transform: translateY(0) scale(1); }
+    .modal-mockup::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(200,169,110,0.07) 0%, transparent 70%);
+    }
+    /* Shimmer animation on mockup */
+    .modal-mockup::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(200,169,110,0.04) 50%, transparent 60%);
+      animation: mockup-shimmer 3s ease-in-out 1s infinite;
+    }
+    @keyframes mockup-shimmer { 0%,100% { opacity: 0; transform: translateX(-100%); } 50% { opacity: 1; transform: translateX(100%); } }
+
+    .mock-phone {
+      width: clamp(80px,12vw,130px); aspect-ratio: 9/19.5;
+      background: #1a1814; border: 1px solid rgba(200,169,110,0.22);
+      border-radius: clamp(12px,2vw,20px); flex-shrink: 0;
+      position: relative; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 1;
+    }
+    .mock-phone::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(200,169,110,0.07) 0%, transparent 60%);
+    }
+    .mock-phone.main { width: clamp(100px,15vw,160px); box-shadow: 0 30px 80px rgba(0,0,0,0.7); z-index: 2; }
+    .mock-phone.side { opacity: 0.4; }
+    .mock-phone-notch { width: 30%; height: 4px; background: #111; border-radius: 4px; margin: 10px auto 0; }
+    .mock-phone-ui { padding: 10px 8px; display: flex; flex-direction: column; gap: 6px; }
+    .mock-bar { height: clamp(4px,1vw,7px); background: rgba(200,169,110,0.14); border-radius: 4px; }
+    .mock-bar.gold { background: rgba(200,169,110,0.42); width: 55%; }
+    .mock-bar.short { width: 70%; }
+    .mock-bar.shorter { width: 40%; }
+    .mock-card { margin-top: 4px; height: clamp(28px,5vw,48px); background: rgba(200,169,110,0.07); border: 1px solid rgba(200,169,110,0.14); border-radius: 8px; }
+    .modal-mockup-label {
+      position: absolute; bottom: 1rem; right: 1.2rem;
+      font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
+    }
+
+    /* Stats */
+    .modal-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1px; border: 1px solid var(--line); margin-bottom: clamp(2rem,5vw,3.5rem);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.6s var(--ease) 0.55s, transform 0.6s var(--ease) 0.55s;
+    }
+    #modal-overlay.open .modal-stats { opacity: 1; transform: translateY(0); }
+    .modal-stat { padding: clamp(1rem,2.5vw,1.5rem); border-right: 1px solid var(--line); }
+    .modal-stat:last-child { border-right: none; }
+    .modal-stat-val { font-size: clamp(1.8rem,4vw,3rem); font-weight: 300; color: var(--gold); line-height: 1; letter-spacing: -0.02em; }
+    .modal-stat-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cream-dim); margin-top: 0.4rem; }
+
+    /* Body */
+    .modal-body {
+      display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,5vw,4rem);
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.6s var(--ease) 0.65s, transform 0.6s var(--ease) 0.65s;
+    }
+    #modal-overlay.open .modal-body { opacity: 1; transform: translateY(0); }
+    .modal-section-title {
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--line);
+    }
+    .modal-text { font-size: clamp(0.9rem,1.4vw,1rem); color: var(--cream-dim); line-height: 1.78; }
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .modal-tag {
+      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.35rem 0.75rem; border: 1px solid var(--line); color: var(--cream-dim);
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .modal-tag:hover { border-color: var(--gold); color: var(--gold); }
+
+    @keyframes fade-up  { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      body { cursor: auto; }
+      #cursor-dot, #cursor-ring { display: none; }
+      .project-row { grid-template-columns: 2.5rem 1fr; gap: 0 1rem; }
+      .project-status { grid-column: 2; padding-top: 0; margin-top: 0.4rem; }
+      .hero-scroll-hint, .hero-side-line { display: none; }
+      .stack-grid { grid-template-columns: repeat(2,1fr); }
+      .modal-body { grid-template-columns: 1fr; gap: 2rem; }
+      .modal-mockup { aspect-ratio: 4/3; }
+      .mock-phone.side { display: none; }
+    }
+    @media (max-width: 420px) {
+      .modal-stats { grid-template-columns: 1fr 1fr; }
+      .modal-stat:nth-child(3) { grid-column: 1/-1; border-right: none; border-top: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ── MODAL ── -->
+  <div id="modal-overlay" role="dialog" aria-modal="true" aria-label="Project case study">
+    <div id="modal">
+      <div class="modal-handle"></div>
+      <button class="modal-close" id="modal-close-btn">Close <span class="x">×</span></button>
+      <div class="modal-inner">
+        <p class="modal-eyebrow" id="modal-eyebrow">Case Study</p>
+        <h2 class="modal-title" id="modal-title"></h2>
+
+        <div class="modal-mockup">
+          <div class="mock-phone side">
+            <div class="mock-phone-notch"></div>
+            <div class="mock-phone-ui">
+              <div class="mock-bar gold"></div>
+              <div class="mock-bar short"></div>
+              <div class="mock-bar shorter"></div>
+              <div class="mock-card"></div>
+            </div>
+          </div>
+          <div class="mock-phone main">
+            <div class="mock-phone-notch"></div>
+            <div class="mock-phone-ui">
+              <div class="mock-bar gold"></div>
+              <div class="mock-bar"></div>
+              <div class="mock-bar short"></div>
+              <div class="mock-card"></div>
+              <div class="mock-bar shorter"></div>
+              <div class="mock-bar short"></div>
+            </div>
+          </div>
+          <div class="mock-phone side">
+            <div class="mock-phone-notch"></div>
+            <div class="mock-phone-ui">
+              <div class="mock-bar gold"></div>
+              <div class="mock-bar shorter"></div>
+              <div class="mock-bar short"></div>
+              <div class="mock-card"></div>
+            </div>
+          </div>
+          <span class="modal-mockup-label">Interface Preview</span>
+        </div>
+
+        <div class="modal-stats" id="modal-stats"></div>
+        <div class="modal-body"  id="modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="#" class="nav-name">OT — Studio</a>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-line"></div>
+    <div class="container">
+      <p class="hero-eyebrow">Android Developer · Lagos, NG</p>
+      <h1 class="hero-name" id="hero-name" aria-label="Ogundiji Tiwalope"></h1>
+      <p class="hero-tagline">Crafting precision-built Android experiences — from architecture to pixel-perfect interfaces that feel inevitable.</p>
+    </div>
+    <div class="hero-side-line"></div>
+    <div class="container" style="position:relative;">
+      <span class="hero-scroll-hint">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ── WORK ── -->
+  <section id="work">
+    <div class="container">
+      <p class="section-label"><span class="label-text">Selected Work</span></p>
+      <ul class="project-list">
+
+        <li class="project-item" data-project="novu">
+          <div class="project-row">
+            <span class="project-index">01</span>
+            <div class="project-main">
+              <h2 class="project-name">Novu — Finance App</h2>
+              <div class="project-meta"><span class="project-tag">Android</span><span>Kotlin · Jetpack Compose</span><span>2024</span></div>
+              <p class="project-desc">A personal finance tracker with real-time spend analytics, Plaid integration, and a custom charting layer built entirely in Canvas. Designed to feel as refined as the numbers it reveals.</p>
+              <span class="project-cta">View Case Study <span class="arrow">→</span></span>
+              <span class="project-toggle">[ expand ]</span>
+            </div>
+            <span class="project-status live">Live</span>
+          </div>
+        </li>
+
+        <li class="project-item" data-project="oriki">
+          <div class="project-row">
+            <span class="project-index">02</span>
+            <div class="project-main">
+              <h2 class="project-name">Oriki — Social Platform</h2>
+              <div class="project-meta"><span class="project-tag">Android</span><span>Kotlin · MVI · Firebase</span><span>2024</span></div>
+              <p class="project-desc">A short-form audio storytelling platform celebrating Yoruba oral tradition. Built with a reactive MVI architecture, custom audio playback engine, and offline-first sync logic.</p>
+              <span class="project-cta">View Case Study <span class="arrow">→</span></span>
+              <span class="project-toggle">[ expand ]</span>
+            </div>
+            <span class="project-status live">Live</span>
+          </div>
+        </li>
+
+        <li class="project-item" data-project="halcyon">
+          <div class="project-row">
+            <span class="project-index">03</span>
+            <div class="project-main">
+              <h2 class="project-name">Halcyon — Wellness</h2>
+              <div class="project-meta"><span class="project-tag">Android</span><span>Kotlin · Room · WorkManager</span><span>2023</span></div>
+              <p class="project-desc">A sleep and recovery app with adaptive notification scheduling, background health data sync, and a minimal UI built around reducing cognitive load before bedtime.</p>
+              <span class="project-cta">View Case Study <span class="arrow">→</span></span>
+              <span class="project-toggle">[ expand ]</span>
+            </div>
+            <span class="project-status live">Live</span>
+          </div>
+        </li>
+
+        <li class="project-item" data-project="kora">
+          <div class="project-row">
+            <span class="project-index">04</span>
+            <div class="project-main">
+              <h2 class="project-name">Kora — Payments SDK</h2>
+              <div class="project-meta"><span class="project-tag">SDK · Library</span><span>Kotlin · Retrofit · Coroutines</span><span>2023</span></div>
+              <p class="project-desc">A drop-in payments SDK for Nigerian developers — handling card tokenization, bank transfer flows, and USSD fallback with a single composable entry point.</p>
+              <span class="project-cta">View Case Study <span class="arrow">→</span></span>
+              <span class="project-toggle">[ expand ]</span>
+            </div>
+            <span class="project-status wip">In Progress</span>
+          </div>
+        </li>
+
+        <li class="project-item" data-project="soro">
+          <div class="project-row">
+            <span class="project-index">05</span>
+            <div class="project-main">
+              <h2 class="project-name">Sòrò — Real-time Chat</h2>
+              <div class="project-meta"><span class="project-tag">Android</span><span>Kotlin · WebSocket · Ktor</span><span>2022</span></div>
+              <p class="project-desc">End-to-end encrypted messaging with ephemeral threads, voice notes, and a custom diffing algorithm for conversation list updates at sub-16ms frame times.</p>
+              <span class="project-cta">View Case Study <span class="arrow">→</span></span>
+              <span class="project-toggle">[ expand ]</span>
+            </div>
+            <span class="project-status live">Live</span>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── STACK ── -->
+  <section id="stack">
+    <div class="container">
+      <p class="section-label"><span class="label-text">Tools &amp; Stack</span></p>
+      <div class="stack-grid">
+        <div class="stack-cell"><p class="stack-cell-name">Kotlin</p><p class="stack-cell-type">Language</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Jetpack Compose</p><p class="stack-cell-type">UI Framework</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Coroutines</p><p class="stack-cell-type">Async</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Room / SQLite</p><p class="stack-cell-type">Persistence</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Retrofit</p><p class="stack-cell-type">Networking</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Hilt / Dagger</p><p class="stack-cell-type">DI</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Firebase</p><p class="stack-cell-type">Backend</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">MVI / MVVM</p><p class="stack-cell-type">Architecture</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">Figma</p><p class="stack-cell-type">Design</p></div>
+        <div class="stack-cell"><p class="stack-cell-name">GitHub Actions</p><p class="stack-cell-type">CI / CD</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-label"><span class="label-text">Get in Touch</span></p>
+      <h2 class="contact-cta">Let's build<br>something <em>precise.</em></h2>
+      <ul class="contact-links">
+        <li><a href="mailto:tiwalope@example.com">Email</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="https://twitter.com/" target="_blank" rel="noopener">Twitter / X</a></li>
+      </ul>
+    </div>
+    <div class="container">
+      <footer>
+        <span class="footer-copy">© 2025 Ogundiji Tiwalope</span>
+        <span class="footer-loc">Lagos, Nigeria</span>
+      </footer>
+    </div>
+  </section>
+
+<script>
+/* ════════════════════════════════════════
+   PROJECT DATA
+════════════════════════════════════════ */
+const PROJECTS = {
+  novu: {
+    title: 'Novu —\n<em>Finance App</em>',
+    eyebrow: 'Case Study · 01 / 05',
+    stats: [
+      { val: '40K+', label: 'Downloads' },
+      { val: '4.8★', label: 'Play Store' },
+      { val: '< 2s', label: 'Cold Start' },
+    ],
+    overview: 'Novu is a personal finance tracker built with Jetpack Compose and a fully custom Canvas charting layer. The goal was to make financial data feel humane — not clinical. Every animation, every data point carries deliberate motion that communicates confidence rather than complexity.',
+    approach: 'Architecture follows strict unidirectional data flow (MVI) with a single source of truth in Room. Plaid Link handles account connection while a background WorkManager job syncs transactions silently. The charting engine was built from scratch to avoid library overhead — smooth 60fps bezier curves with haptic feedback on data nodes.',
+    tags: ['Kotlin', 'Jetpack Compose', 'Room', 'WorkManager', 'Plaid SDK', 'MVI', 'Canvas API'],
+  },
+  oriki: {
+    title: 'Oriki —\n<em>Social Platform</em>',
+    eyebrow: 'Case Study · 02 / 05',
+    stats: [
+      { val: '12K+', label: 'Users' },
+      { val: '98%', label: 'Crash-free' },
+      { val: '60fps', label: 'Playback' },
+    ],
+    overview: 'Oriki is a short-form audio storytelling platform designed to celebrate Yoruba oral tradition. Think voice memos meets editorial — a space where culture is the content, and the interface simply holds it.',
+    approach: 'Built on a reactive MVI architecture with Firebase Realtime Database for live feed updates. The audio engine wraps ExoPlayer in a custom playback controller with waveform visualization drawn in Canvas. Offline-first by design: all audio is cached locally using a custom LRU store with graceful degradation on slow connections.',
+    tags: ['Kotlin', 'MVI', 'Firebase', 'ExoPlayer', 'Canvas', 'Offline-first', 'Realtime DB'],
+  },
+  halcyon: {
+    title: 'Halcyon —\n<em>Wellness</em>',
+    eyebrow: 'Case Study · 03 / 05',
+    stats: [
+      { val: '8K+', label: 'Active Users' },
+      { val: '4.9★', label: 'Rating' },
+      { val: '< 1s', label: 'Wake Time' },
+    ],
+    overview: 'Halcyon is a sleep and recovery tracker that adapts to your schedule — not the other way around. The design principle: every screen before bed should create calm, not friction. No bright whites. No jarring transitions.',
+    approach: 'WorkManager schedules adaptive bedtime nudges based on historical sleep patterns — no ML frameworks, just smart heuristics on-device. Health Connect handles data sync. The UI is intentionally dark-mode-only with reduced animation intensity triggered after a user-configured wind-down time.',
+    tags: ['Kotlin', 'Room', 'WorkManager', 'Health Connect', 'Compose', 'MVVM', 'Notifications'],
+  },
+  kora: {
+    title: 'Kora —\n<em>Payments SDK</em>',
+    eyebrow: 'Case Study · 04 / 05',
+    stats: [
+      { val: '3', label: 'Payment Flows' },
+      { val: '< 5MB', label: 'SDK Size' },
+      { val: '99.9%', label: 'Uptime' },
+    ],
+    overview: 'Kora is a developer-first payments SDK for the Nigerian market. Card tokenization, bank transfer, and USSD — all behind a single composable entry point that integrates into any app in under 30 minutes.',
+    approach: 'Built as a standalone Gradle module with zero mandatory third-party dependencies. Retrofit + OkHttp handle networking with a custom interceptor for HMAC request signing. The Compose UI layer supports full theme override so it adapts to the host app\'s design system automatically.',
+    tags: ['Kotlin', 'Retrofit', 'Coroutines', 'Compose', 'Gradle Module', 'HMAC Auth', 'USSD'],
+  },
+  soro: {
+    title: 'Sòrò —\n<em>Real-time Chat</em>',
+    eyebrow: 'Case Study · 05 / 05',
+    stats: [
+      { val: 'E2E', label: 'Encrypted' },
+      { val: '16ms', label: 'Frame Budget' },
+      { val: '< 50ms', label: 'Msg Latency' },
+    ],
+    overview: 'Sòrò — "speak" in Yoruba — is an end-to-end encrypted messaging app with ephemeral threads, voice notes, and a conversation list diffing algorithm that keeps the UI snappy regardless of thread count.',
+    approach: 'WebSockets via Ktor handle real-time delivery. Messages are encrypted on-device using libsodium before any network transit. The conversation list uses a hand-rolled DiffUtil implementation that batches and coalesces rapid update events, keeping LazyColumn at a consistent 60fps even with hundreds of active threads.',
+    tags: ['Kotlin', 'WebSocket', 'Ktor', 'libsodium', 'LazyColumn', 'DiffUtil', 'Coroutines'],
+  },
+};
+
+/* ════════════════════════════════════════
+   SPLIT-TEXT HERO NAME
+════════════════════════════════════════ */
+(function buildHeroName() {
+  const el = document.getElementById('hero-name');
+  const lines = [
+    { chars: 'Ogundiji', italic: false },
+    { chars: 'Tiwalope', italic: true  },
+  ];
+  let delay = 0.55;
+
+  lines.forEach((line, li) => {
+    const wrap = document.createElement('div');
+    if (li > 0) wrap.style.display = 'block';
+
+    [...line.chars].forEach(ch => {
+      const tag  = line.italic ? 'em' : 'span';
+      const span = document.createElement(tag);
+      span.className = 'char';
+      span.textContent = ch;
+      span.style.animationDelay = delay.toFixed(3) + 's';
+      delay += 0.046;
+      wrap.appendChild(span);
+    });
+
+    el.appendChild(wrap);
+    delay += 0.09;
+  });
+})();
+
+/* ════════════════════════════════════════
+   CUSTOM CURSOR
+════════════════════════════════════════ */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+});
+(function tick() {
+  rx += (mx - rx) * 0.13;
+  ry += (my - ry) * 0.13;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(tick);
+})();
+
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
+
+['a', '.project-row', '.stack-cell', '.modal-close', '.project-cta', 'button', '.modal-tag'].forEach(sel => {
+  document.querySelectorAll(sel).forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+});
+
+/* ════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════ */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    setTimeout(() => e.target.classList.add('visible'), +e.target.dataset.delay || 0);
+    obs.unobserve(e.target);
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.project-item').forEach((el,i) => { el.dataset.delay = i*85; obs.observe(el); });
+document.querySelectorAll('.stack-cell').forEach((el,i)   => { el.dataset.delay = i*50; obs.observe(el); });
+document.querySelectorAll('.section-label, .contact-cta').forEach(el => obs.observe(el));
+
+/* ════════════════════════════════════════
+   PROJECT EXPAND — hover (desktop) / tap (mobile)
+════════════════════════════════════════ */
+const isMobile = () => window.innerWidth <= 700;
+
+document.querySelectorAll('.project-item').forEach(item => {
+  const row    = item.querySelector('.project-row');
+  const toggle = item.querySelector('.project-toggle');
+
+  row.addEventListener('mouseenter', () => { if (!isMobile()) item.classList.add('open'); });
+  row.addEventListener('mouseleave', () => { if (!isMobile()) item.classList.remove('open'); });
+
+  if (toggle) {
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = item.classList.toggle('open');
+      toggle.textContent = open ? '[ collapse ]' : '[ expand ]';
+    });
+  }
+});
+
+/* ════════════════════════════════════════
+   ANIMATED NUMBER COUNTER
+════════════════════════════════════════ */
+function animCounter(el, target) {
+  const numStr  = target.match(/[\d.]+/)?.[0];
+  const prefix  = target.match(/^[^\d]*/)?.[0] || '';
+  const suffix  = target.replace(/^[^\d]*[\d.]+/, '');
+  if (!numStr) { el.textContent = target; return; }
+  const endVal  = parseFloat(numStr);
+  const isFloat = numStr.includes('.');
+  const dur = 1100, t0 = performance.now();
+  (function step(now) {
+    const p    = Math.min((now - t0) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    const cur  = endVal * ease;
+    el.textContent = prefix + (isFloat ? cur.toFixed(1) : Math.round(cur)) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* ════════════════════════════════════════
+   MODAL
+════════════════════════════════════════ */
+const overlay  = document.getElementById('modal-overlay');
+const modalEl  = document.getElementById('modal');
+const closeBtn = document.getElementById('modal-close-btn');
+const titleEl  = document.getElementById('modal-title');
+const eyeEl    = document.getElementById('modal-eyebrow');
+const statsEl  = document.getElementById('modal-stats');
+const bodyEl   = document.getElementById('modal-body');
+
+function openModal(key) {
+  const p = PROJECTS[key];
+  if (!p) return;
+
+  eyeEl.textContent = p.eyebrow;
+  titleEl.innerHTML = p.title.replace('\n', '<br>');
+
+  statsEl.innerHTML = p.stats.map(s =>
+    `<div class="modal-stat">
+      <div class="modal-stat-val" data-target="${s.val}">${s.val}</div>
+      <div class="modal-stat-label">${s.label}</div>
+    </div>`
+  ).join('');
+
+  bodyEl.innerHTML =
+    `<div>
+      <p class="modal-section-title">Overview</p>
+      <p class="modal-text">${p.overview}</p>
+    </div>
+    <div>
+      <p class="modal-section-title">Approach</p>
+      <p class="modal-text">${p.approach}</p>
+      <div class="modal-tags">${p.tags.map(t => `<span class="modal-tag">${t}</span>`).join('')}</div>
+    </div>`;
+
+  overlay.classList.add('open');
+  document.body.classList.add('modal-open');
+  modalEl.scrollTop = 0;
+
+  // start counters after slide-in
+  setTimeout(() => {
+    statsEl.querySelectorAll('.modal-stat-val').forEach(el => animCounter(el, el.dataset.target));
+  }, 700);
+
+  // add cursor hover to new tags
+  bodyEl.querySelectorAll('.modal-tag').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+  });
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+document.querySelectorAll('.project-cta').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    openModal(btn.closest('.project-item').dataset.project);
+  });
+});
+
+closeBtn.addEventListener('click', closeModal);
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Swipe down to close on mobile
+let ty0 = 0;
+modalEl.addEventListener('touchstart', e => { ty0 = e.touches[0].clientY; }, { passive: true });
+modalEl.addEventListener('touchend',   e => {
+  if (e.changedTouches[0].clientY - ty0 > 80 && modalEl.scrollTop === 0) closeModal();
+}, { passive: true });
+
+/* ════════════════════════════════════════
+   HERO PARALLAX (desktop)
+════════════════════════════════════════ */
+const heroName = document.getElementById('hero-name');
+document.addEventListener('mousemove', e => {
+  if (isMobile()) return;
+  const x = ((e.clientX / window.innerWidth)  - 0.5) * 10;
+  const y = ((e.clientY / window.innerHeight) - 0.5) * 6;
+  heroName.style.transform = `translate(${x}px,${y}px)`;
+});
+</script>
+</body>
+</html>
