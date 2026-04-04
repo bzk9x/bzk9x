@@ -421,19 +421,6 @@
       font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
     }
 
-    /* Stats */
-    .modal-stats {
-      display: grid; grid-template-columns: repeat(3,1fr);
-      gap: 1px; border: 1px solid var(--line); margin-bottom: clamp(2rem,5vw,3.5rem);
-      opacity: 0; transform: translateY(12px);
-      transition: opacity 0.6s var(--ease) 0.55s, transform 0.6s var(--ease) 0.55s;
-    }
-    #modal-overlay.open .modal-stats { opacity: 1; transform: translateY(0); }
-    .modal-stat { padding: clamp(1rem,2.5vw,1.5rem); border-right: 1px solid var(--line); }
-    .modal-stat:last-child { border-right: none; }
-    .modal-stat-val { font-size: clamp(1.8rem,4vw,3rem); font-weight: 300; color: var(--gold); line-height: 1; letter-spacing: -0.02em; }
-    .modal-stat-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cream-dim); margin-top: 0.4rem; }
-
     /* Body */
     .modal-body {
       display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem,5vw,4rem);
@@ -467,10 +454,6 @@
       .stack-grid { grid-template-columns: repeat(2,1fr); }
       .modal-body { grid-template-columns: 1fr; gap: 2rem; }
     }
-    @media (max-width: 420px) {
-      .modal-stats { grid-template-columns: 1fr 1fr; }
-      .modal-stat:nth-child(3) { grid-column: 1/-1; border-right: none; border-top: 1px solid var(--line); }
-    }
   </style>
 </head>
 <body>
@@ -492,7 +475,6 @@
           <span class="modal-mockup-label">Interface Preview</span>
         </div>
 
-        <div class="modal-stats" id="modal-stats"></div>
         <div class="modal-body"  id="modal-body"></div>
       </div>
     </div>
@@ -532,9 +514,9 @@
           <div class="project-row">
             <span class="project-index">01</span>
             <div class="project-main">
-              <h2 class="project-name">Novu — Finance App</h2>
-              <div class="project-meta"><span class="project-tag">Android</span><span>Kotlin · Jetpack Compose</span><span>2024</span></div>
-              <p class="project-desc">A personal finance tracker with real-time spend analytics, Plaid integration, and a custom charting layer built entirely in Canvas. Designed to feel as refined as the numbers it reveals.</p>
+              <h2 class="project-name">How's my mind: Mood tracker</h2>
+              <div class="project-meta"><span class="project-tag">Android</span><span>Kotlin · Jetpack Compose</span><span>2026</span></div>
+              <p class="project-desc">"How's My Mind" is a minimalist Android application designed for mental health and mood tracking. Built entirely with Kotlin and Jetpack Compose, the app empowers users to log daily emotional states, physical metrics, and behavioral triggers, offering personalized insights and custom visual analytics to help monitor their well-being over time.</p>
               <span class="project-cta">View Case Study <span class="arrow">→</span></span>
               <span class="project-toggle">[ expand ]</span>
             </div>
@@ -647,27 +629,17 @@
 ════════════════════════════════════════ */
 const PROJECTS = {
   novu: {
-    title: 'Novu —\n<em>Finance App</em>',
+    title: "How's my mind —\n<em>Mood Tracker</em>",
     eyebrow: 'Case Study · 01 / 05',
-    screenshot: 'https://via.placeholder.com/600x400?text=Novu+Finance+App',
-    stats: [
-      { val: '40K+', label: 'Downloads' },
-      { val: '4.8★', label: 'Play Store' },
-      { val: '< 2s', label: 'Cold Start' },
-    ],
-    overview: 'Novu is a personal finance tracker built with Jetpack Compose and a fully custom Canvas charting layer. The goal was to make financial data feel humane — not clinical. Every animation, every data point carries deliberate motion that communicates confidence rather than complexity.',
+    screenshot: "https://bzk9x.github.io/bzk9x/Screenshot_20260404-105743_How's%20My%20Mind.jpg",
+    overview: "How's My Mind is a comprehensive, single-screen mental health tracker designed to log daily emotional and physical well-being. Users can record their core mood, energy levels, sleep duration, and medication adherence, while also tagging specific daily triggers to identify behavioral patterns. The interface features a daily check-in prompt, a dynamic streak counter, a rich historical feed color-coded by mood severity, and an in-depth analytics screen that visualizes user data through custom bar charts and calculated metrics over various time ranges.",
     approach: 'Architecture follows strict unidirectional data flow (MVI) with a single source of truth in Room. Plaid Link handles account connection while a background WorkManager job syncs transactions silently. The charting engine was built from scratch to avoid library overhead — smooth 60fps bezier curves with haptic feedback on data nodes.',
-    tags: ['Kotlin', 'Jetpack Compose', 'Room', 'WorkManager', 'Plaid SDK', 'MVI', 'Canvas API'],
+    tags: ['Kotlin', 'Jetpack Compose', 'UI Toolkit', 'Platform API', 'Local Storage', 'Data Sterilization'],
   },
   oriki: {
-    title: 'Oriki —\n<em>Social Platform</em>',
+    title: 'Closet —\n<em>Virtual Wardrobe</em>',
     eyebrow: 'Case Study · 02 / 05',
     screenshot: 'https://via.placeholder.com/600x400?text=Oriki+Social+Platform',
-    stats: [
-      { val: '12K+', label: 'Users' },
-      { val: '98%', label: 'Crash-free' },
-      { val: '60fps', label: 'Playback' },
-    ],
     overview: 'Oriki is a short-form audio storytelling platform designed to celebrate Yoruba oral tradition. Think voice memos meets editorial — a space where culture is the content, and the interface simply holds it.',
     approach: 'Built on a reactive MVI architecture with Firebase Realtime Database for live feed updates. The audio engine wraps ExoPlayer in a custom playback controller with waveform visualization drawn in Canvas. Offline-first by design: all audio is cached locally using a custom LRU store with graceful degradation on slow connections.',
     tags: ['Kotlin', 'MVI', 'Firebase', 'ExoPlayer', 'Canvas', 'Offline-first', 'Realtime DB'],
@@ -676,11 +648,6 @@ const PROJECTS = {
     title: 'Halcyon —\n<em>Wellness</em>',
     eyebrow: 'Case Study · 03 / 05',
     screenshot: 'https://via.placeholder.com/600x400?text=Halcyon+Wellness',
-    stats: [
-      { val: '8K+', label: 'Active Users' },
-      { val: '4.9★', label: 'Rating' },
-      { val: '< 1s', label: 'Wake Time' },
-    ],
     overview: 'Halcyon is a sleep and recovery tracker that adapts to your schedule — not the other way around. The design principle: every screen before bed should create calm, not friction. No bright whites. No jarring transitions.',
     approach: 'WorkManager schedules adaptive bedtime nudges based on historical sleep patterns — no ML frameworks, just smart heuristics on-device. Health Connect handles data sync. The UI is intentionally dark-mode-only with reduced animation intensity triggered after a user-configured wind-down time.',
     tags: ['Kotlin', 'Room', 'WorkManager', 'Health Connect', 'Compose', 'MVVM', 'Notifications'],
@@ -689,11 +656,6 @@ const PROJECTS = {
     title: 'Kora —\n<em>Payments SDK</em>',
     eyebrow: 'Case Study · 04 / 05',
     screenshot: 'https://via.placeholder.com/600x400?text=Kora+Payments+SDK',
-    stats: [
-      { val: '3', label: 'Payment Flows' },
-      { val: '< 5MB', label: 'SDK Size' },
-      { val: '99.9%', label: 'Uptime' },
-    ],
     overview: 'Kora is a developer-first payments SDK for the Nigerian market. Card tokenization, bank transfer, and USSD — all behind a single composable entry point that integrates into any app in under 30 minutes.',
     approach: 'Built as a standalone Gradle module with zero mandatory third-party dependencies. Retrofit + OkHttp handle networking with a custom interceptor for HMAC request signing. The Compose UI layer supports full theme override so it adapts to the host app\'s design system automatically.',
     tags: ['Kotlin', 'Retrofit', 'Coroutines', 'Compose', 'Gradle Module', 'HMAC Auth', 'USSD'],
@@ -702,11 +664,6 @@ const PROJECTS = {
     title: 'Sòrò —\n<em>Real-time Chat</em>',
     eyebrow: 'Case Study · 05 / 05',
     screenshot: 'https://via.placeholder.com/600x400?text=Soro+Real-time+Chat',
-    stats: [
-      { val: 'E2E', label: 'Encrypted' },
-      { val: '16ms', label: 'Frame Budget' },
-      { val: '< 50ms', label: 'Msg Latency' },
-    ],
     overview: 'Sòrò — "speak" in Yoruba — is an end-to-end encrypted messaging app with ephemeral threads, voice notes, and a conversation list diffing algorithm that keeps the UI snappy regardless of thread count.',
     approach: 'WebSockets via Ktor handle real-time delivery. Messages are encrypted on-device using libsodium before any network transit. The conversation list uses a hand-rolled DiffUtil implementation that batches and coalesces rapid update events, keeping LazyColumn at a consistent 60fps even with hundreds of active threads.',
     tags: ['Kotlin', 'WebSocket', 'Ktor', 'libsodium', 'LazyColumn', 'DiffUtil', 'Coroutines'],
@@ -808,26 +765,6 @@ document.querySelectorAll('.project-item').forEach(item => {
 });
 
 /* ════════════════════════════════════════
-   ANIMATED NUMBER COUNTER
-════════════════════════════════════════ */
-function animCounter(el, target) {
-  const numStr  = target.match(/[\d.]+/)?.[0];
-  const prefix  = target.match(/^[^\d]*/)?.[0] || '';
-  const suffix  = target.replace(/^[^\d]*[\d.]+/, '');
-  if (!numStr) { el.textContent = target; return; }
-  const endVal  = parseFloat(numStr);
-  const isFloat = numStr.includes('.');
-  const dur = 1100, t0 = performance.now();
-  (function step(now) {
-    const p    = Math.min((now - t0) / dur, 1);
-    const ease = 1 - Math.pow(1 - p, 3);
-    const cur  = endVal * ease;
-    el.textContent = prefix + (isFloat ? cur.toFixed(1) : Math.round(cur)) + suffix;
-    if (p < 1) requestAnimationFrame(step);
-  })(t0);
-}
-
-/* ════════════════════════════════════════
    MODAL
 ════════════════════════════════════════ */
 const overlay  = document.getElementById('modal-overlay');
@@ -835,7 +772,6 @@ const modalEl  = document.getElementById('modal');
 const closeBtn = document.getElementById('modal-close-btn');
 const titleEl  = document.getElementById('modal-title');
 const eyeEl    = document.getElementById('modal-eyebrow');
-const statsEl  = document.getElementById('modal-stats');
 const bodyEl   = document.getElementById('modal-body');
 
 function openModal(key) {
@@ -847,13 +783,6 @@ function openModal(key) {
 
   // Set screenshot
   document.getElementById('modal-screenshot').src = p.screenshot;
-
-  statsEl.innerHTML = p.stats.map(s =>
-    `<div class="modal-stat">
-      <div class="modal-stat-val" data-target="${s.val}">${s.val}</div>
-      <div class="modal-stat-label">${s.label}</div>
-    </div>`
-  ).join('');
 
   bodyEl.innerHTML =
     `<div>
@@ -869,11 +798,6 @@ function openModal(key) {
   overlay.classList.add('open');
   document.body.classList.add('modal-open');
   modalEl.scrollTop = 0;
-
-  // start counters after slide-in
-  setTimeout(() => {
-    statsEl.querySelectorAll('.modal-stat-val').forEach(el => animCounter(el, el.dataset.target));
-  }, 700);
 
   // add cursor hover to new tags
   bodyEl.querySelectorAll('.modal-tag').forEach(el => {
