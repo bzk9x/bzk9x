@@ -391,11 +391,11 @@
 
     /* Phone mockup */
     .modal-mockup {
-      width: 100%; aspect-ratio: 16/7;
+      width: 100%; max-width: 600px;
       background: #0d0c0a; border: 1px solid var(--line); border-radius: 12px;
       margin-bottom: clamp(2rem,5vw,3.5rem); overflow: hidden;
       position: relative; display: flex; align-items: center; justify-content: center;
-      gap: 1.5rem; padding: clamp(1rem,3vw,2rem);
+      padding: clamp(1rem,3vw,2rem);
       opacity: 0; transform: translateY(20px) scale(0.98);
       transition: opacity 0.7s var(--ease) 0.45s, transform 0.7s var(--ease) 0.45s;
     }
@@ -412,26 +412,10 @@
     }
     @keyframes mockup-shimmer { 0%,100% { opacity: 0; transform: translateX(-100%); } 50% { opacity: 1; transform: translateX(100%); } }
 
-    .mock-phone {
-      width: clamp(80px,12vw,130px); aspect-ratio: 9/19.5;
-      background: #1a1814; border: 1px solid rgba(200,169,110,0.22);
-      border-radius: clamp(12px,2vw,20px); flex-shrink: 0;
-      position: relative; overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 1;
+    .modal-screenshot {
+      width: 100%; height: auto; max-height: 500px; object-fit: contain;
+      border-radius: 8px; display: block; position: relative; z-index: 1;
     }
-    .mock-phone::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(200,169,110,0.07) 0%, transparent 60%);
-    }
-    .mock-phone.main { width: clamp(100px,15vw,160px); box-shadow: 0 30px 80px rgba(0,0,0,0.7); z-index: 2; }
-    .mock-phone.side { opacity: 0.4; }
-    .mock-phone-notch { width: 30%; height: 4px; background: #111; border-radius: 4px; margin: 10px auto 0; }
-    .mock-phone-ui { padding: 10px 8px; display: flex; flex-direction: column; gap: 6px; }
-    .mock-bar { height: clamp(4px,1vw,7px); background: rgba(200,169,110,0.14); border-radius: 4px; }
-    .mock-bar.gold { background: rgba(200,169,110,0.42); width: 55%; }
-    .mock-bar.short { width: 70%; }
-    .mock-bar.shorter { width: 40%; }
-    .mock-card { margin-top: 4px; height: clamp(28px,5vw,48px); background: rgba(200,169,110,0.07); border: 1px solid rgba(200,169,110,0.14); border-radius: 8px; }
     .modal-mockup-label {
       position: absolute; bottom: 1rem; right: 1.2rem;
       font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim);
@@ -482,8 +466,6 @@
       .hero-scroll-hint, .hero-side-line { display: none; }
       .stack-grid { grid-template-columns: repeat(2,1fr); }
       .modal-body { grid-template-columns: 1fr; gap: 2rem; }
-      .modal-mockup { aspect-ratio: 4/3; }
-      .mock-phone.side { display: none; }
     }
     @media (max-width: 420px) {
       .modal-stats { grid-template-columns: 1fr 1fr; }
@@ -506,35 +488,7 @@
         <h2 class="modal-title" id="modal-title"></h2>
 
         <div class="modal-mockup">
-          <div class="mock-phone side">
-            <div class="mock-phone-notch"></div>
-            <div class="mock-phone-ui">
-              <div class="mock-bar gold"></div>
-              <div class="mock-bar short"></div>
-              <div class="mock-bar shorter"></div>
-              <div class="mock-card"></div>
-            </div>
-          </div>
-          <div class="mock-phone main">
-            <div class="mock-phone-notch"></div>
-            <div class="mock-phone-ui">
-              <div class="mock-bar gold"></div>
-              <div class="mock-bar"></div>
-              <div class="mock-bar short"></div>
-              <div class="mock-card"></div>
-              <div class="mock-bar shorter"></div>
-              <div class="mock-bar short"></div>
-            </div>
-          </div>
-          <div class="mock-phone side">
-            <div class="mock-phone-notch"></div>
-            <div class="mock-phone-ui">
-              <div class="mock-bar gold"></div>
-              <div class="mock-bar shorter"></div>
-              <div class="mock-bar short"></div>
-              <div class="mock-card"></div>
-            </div>
-          </div>
+          <img id="modal-screenshot" src="" alt="App screenshot" class="modal-screenshot" />
           <span class="modal-mockup-label">Interface Preview</span>
         </div>
 
@@ -695,6 +649,7 @@ const PROJECTS = {
   novu: {
     title: 'Novu —\n<em>Finance App</em>',
     eyebrow: 'Case Study · 01 / 05',
+    screenshot: 'https://via.placeholder.com/600x400?text=Novu+Finance+App',
     stats: [
       { val: '40K+', label: 'Downloads' },
       { val: '4.8★', label: 'Play Store' },
@@ -707,6 +662,7 @@ const PROJECTS = {
   oriki: {
     title: 'Oriki —\n<em>Social Platform</em>',
     eyebrow: 'Case Study · 02 / 05',
+    screenshot: 'https://via.placeholder.com/600x400?text=Oriki+Social+Platform',
     stats: [
       { val: '12K+', label: 'Users' },
       { val: '98%', label: 'Crash-free' },
@@ -719,6 +675,7 @@ const PROJECTS = {
   halcyon: {
     title: 'Halcyon —\n<em>Wellness</em>',
     eyebrow: 'Case Study · 03 / 05',
+    screenshot: 'https://via.placeholder.com/600x400?text=Halcyon+Wellness',
     stats: [
       { val: '8K+', label: 'Active Users' },
       { val: '4.9★', label: 'Rating' },
@@ -731,6 +688,7 @@ const PROJECTS = {
   kora: {
     title: 'Kora —\n<em>Payments SDK</em>',
     eyebrow: 'Case Study · 04 / 05',
+    screenshot: 'https://via.placeholder.com/600x400?text=Kora+Payments+SDK',
     stats: [
       { val: '3', label: 'Payment Flows' },
       { val: '< 5MB', label: 'SDK Size' },
@@ -743,6 +701,7 @@ const PROJECTS = {
   soro: {
     title: 'Sòrò —\n<em>Real-time Chat</em>',
     eyebrow: 'Case Study · 05 / 05',
+    screenshot: 'https://via.placeholder.com/600x400?text=Soro+Real-time+Chat',
     stats: [
       { val: 'E2E', label: 'Encrypted' },
       { val: '16ms', label: 'Frame Budget' },
@@ -885,6 +844,9 @@ function openModal(key) {
 
   eyeEl.textContent = p.eyebrow;
   titleEl.innerHTML = p.title.replace('\n', '<br>');
+
+  // Set screenshot
+  document.getElementById('modal-screenshot').src = p.screenshot;
 
   statsEl.innerHTML = p.stats.map(s =>
     `<div class="modal-stat">
